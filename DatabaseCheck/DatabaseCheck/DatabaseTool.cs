@@ -1,4 +1,4 @@
-using Serilog;
+/*using Serilog;
 using Npgsql;
 
 namespace DatabaseCheck;
@@ -98,4 +98,4 @@ public class DatabaseTool
         }
     }
     
-}
+}*/

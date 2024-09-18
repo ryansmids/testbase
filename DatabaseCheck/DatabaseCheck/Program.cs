@@ -1,4 +1,5 @@
-﻿using DatabaseCheck;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -8,53 +9,35 @@ Log.Logger = new LoggerConfiguration()
 
 Log.Information("Database Check gestart.");
 
+var serviceCollection = new ServiceCollection();
+serviceCollection.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql("Host=localhost;Username=postgres;Password=Ryancool123;Database=testbase"));
+serviceCollection.AddTransient<WeerDataApi>();
 
-string host = "localhost";
-string gebruiker = "postgres";
-string wachtwoord = "Ryancool123";
-string databaseNaam = "testbase";
+var serviceProvider = serviceCollection.BuildServiceProvider();
 
-var dbCheckTool = new DatabaseTool(host, gebruiker, wachtwoord, databaseNaam);
-var apiDataTool = new WeerDataApi();
+var context = serviceProvider.GetRequiredService<AppDbContext>();
 
+// Zorg ervoor dat de database bestaat en de tabellen correct zijn ingesteld
+Log.Information($"Controleren of de database '{context.Database.GetDbConnection().Database}' bestaat.");
 
+await context.Database.MigrateAsync();
 
-
-if (!dbCheckTool.DatabaseBestaat())
+// Controleer of de tabel buitentemperatuur gegevens bevat
+if (!await context.BuitenTemperaturen.AnyAsync())
 {
-    Log.Information($"Database '{databaseNaam}' bestaat niet, wordt nu aangemaakt.");
-    dbCheckTool.MaakDatabase();
-    
-    
-    dbCheckTool.MaakTabel("buitentemperatuur", "id SERIAL PRIMARY KEY, temperatuur DECIMAL(5, 2) NOT NULL, tijd VARCHAR(255) NOT NULL, locatie VARCHAR(255) NOT NULL");
-
-
-
-
+    Log.Information("Tabel 'buitentemperatuur' bevat nog geen gegevens, wordt nu aangemaakt.");
 }
 else
 {
-    Log.Information($"Database '{databaseNaam}' bestaat al.");
-
-    if (!dbCheckTool.TabelBestaat("buitentemperatuur"))
-    {
-        Log.Information($"Tabel buitentemperatuur bestaat niet.");
-        dbCheckTool.MaakTabel("buitentemperatuur", "id SERIAL PRIMARY KEY, temperatuur DECIMAL(5, 2) NOT NULL, tijd VARCHAR(255) NOT NULL, locatie VARCHAR(255) NOT NULL");
-
-    
-
-
-    }
-    else
-    {
-        Log.Information($"Tabel buitentemperatuur bestaat.");
-    }
-            
+    Log.Information("Tabel 'buitentemperatuur' bevat al gegevens.");
 }
 
+// Verondersteld dat je WeerDataApi al is geïmplementeerd
+var apiDataTool = serviceProvider.GetRequiredService<WeerDataApi>();
+
+// Start de weerdata API en begin data te verzamelen
 var cancellationTokenSource = new CancellationTokenSource();
 await apiDataTool.StartAsync(cancellationTokenSource.Token);
-
-
 
 Log.Information("Check beëindigd.");
