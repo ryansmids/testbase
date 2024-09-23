@@ -21,10 +21,11 @@ var context = serviceProvider.GetRequiredService<AppDbContext>();
 // Zorg ervoor dat de database bestaat en de tabellen correct zijn ingesteld
 Log.Information($"Controleren of de database '{context.Database.GetDbConnection().Database}' bestaat.");
 
+
 await context.Database.MigrateAsync();
 
 // Controleer of de tabel buitentemperatuur gegevens bevat
-if (!await context.BuitenTemperaturen.AnyAsync())
+if (!await context.BuitenTemperatuur.AnyAsync())
 {
     Log.Information("Tabel 'buitentemperatuur' bevat nog geen gegevens, wordt nu aangemaakt.");
 }

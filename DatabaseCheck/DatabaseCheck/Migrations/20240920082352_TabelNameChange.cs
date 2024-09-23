@@ -6,13 +6,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DatabaseCheck.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class TabelNameChange : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "BuitenTemperaturen",
+                name: "BuitenTemperatuur",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -23,7 +23,7 @@ namespace DatabaseCheck.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BuitenTemperaturen", x => x.Id);
+                    table.PrimaryKey("PK_BuitenTemperatuur", x => x.Id);
                 });
         }
 
@@ -31,7 +31,7 @@ namespace DatabaseCheck.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "BuitenTemperaturen");
+                name: "BuitenTemperatuur");
         }
     }
 }

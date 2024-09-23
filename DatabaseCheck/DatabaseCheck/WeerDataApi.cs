@@ -72,7 +72,7 @@ public class WeerDataApi
                     Locatie = plaats
                 };
 
-                _context.BuitenTemperaturen.Add(buitentemperatuur);
+                _context.BuitenTemperatuur.Add(buitentemperatuur);
                 await _context.SaveChangesAsync();
                 Log.Information("Data succesvol opgeslagen in de database.");
             }

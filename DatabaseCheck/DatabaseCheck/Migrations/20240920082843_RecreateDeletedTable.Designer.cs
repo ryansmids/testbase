@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DatabaseCheck.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240918092448_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240920082843_RecreateDeletedTable")]
+    partial class RecreateDeletedTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace DatabaseCheck.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BuitenTemperaturen");
+                    b.ToTable("BuitenTemperatuur", (string)null);
                 });
 #pragma warning restore 612, 618
         }
